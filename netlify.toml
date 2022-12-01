@@ -1,0 +1,10 @@
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "https://example.netlify.com/*"
+  to = "https://www.example.com/:splat"
+  status = 301
+  force = true

@@ -1,10 +1,16 @@
 import FormInput from "./FormInput";
 import { useState } from "react";
 import './Register.css'
+import { Link, useNavigate } from "react-router-dom";
+import axios from "../../api/axios";
+import toastr from "toastr";
+
+const REGISTER_URL = "authaccount/registration";
+
 // import { useRef } from "react";
 
 const Register = () => {
-
+    const navigate = useNavigate();
     const [values, setValues] = useState({
         username: "",
         email: "",
@@ -32,6 +38,7 @@ const Register = () => {
             placeholder: "Email",
             errorMessage: "It should be a valid email address ",
             label: "Email",
+            pattern:"/^(([^<>()[].,;:s@\"]+([^<>()[].,;:s@\"]+)*)|(\".+\"))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/",
             required: true,
         },
 
@@ -61,6 +68,24 @@ const Register = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        try{
+            const payload = {
+                name: values.username,
+                email: values.email,
+                password: values.password,
+              };
+              const result = axios.post(REGISTER_URL, JSON.stringify(payload), {
+                headers: { "Content-Type": "application/json" },
+                withCredentials: false,
+              });  
+                console.warn(result?.data.message);
+                console.log(result?.data.data);
+                if (result.data.code === 1) return toastr.error(result.data.message);
+                 toastr.success(result.data.message);
+                navigate("/login");
+            } catch {
+                console.log("Failed to sign in");
+            }
     }
 
     const onChange = (e) => {
@@ -76,6 +101,9 @@ const Register = () => {
                     <FormInput key={input.id} {...input} value={values[input.name]} onChange={onChange} />
                 ))}
                 <button type="submit">Submit</button>
+                <Link to="/">
+                    <div className="navigate">Return to Login</div>
+                </Link>
             </form>
         </div>
     )
